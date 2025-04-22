@@ -1,0 +1,43 @@
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services") // ✅ Wajib untuk Firebase
+}
+
+android {
+    namespace = "com.example.bpjs_barcodescanner"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = "27.0.12077973" // ✅ Sesuai requirement Firebase SDK
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    defaultConfig {
+        applicationId = "com.example.bpjs_barcodescanner"
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+flutter {
+    source = "../.."
+}
