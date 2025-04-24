@@ -1,55 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  static const List<Widget> _pages = <Widget>[
-    ScanBarcodePage(),
-    SearchPage(),
-    InputDataPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
-  void _logout() async {
-    await FirebaseAuth.instance.signOut();
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
-    }
+  void _navigateTo(BuildContext context, String routeName) {
+    Navigator.pushNamed(context, routeName);
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // Disable tombol back
+      onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('BPJS Barcode Scanner'),
           backgroundColor: Colors.blue,
           centerTitle: true,
-          automaticallyImplyLeading: false, // Hilangkan back button
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
-              onPressed: _logout,
+              onPressed: () => _logout(context),
               tooltip: 'Logout',
             ),
           ],
         ),
-        body: Center(
-          child: _pages.elementAt(_selectedIndex),
+        body: const Center(
+          child: Text(
+            'Silakan pilih menu di bawah',
+            style: TextStyle(fontSize: 18),
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
@@ -66,55 +52,20 @@ class _HomePageState extends State<HomePage> {
               label: 'Input',
             ),
           ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue,
-          onTap: _onItemTapped,
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                _navigateTo(context, '/scan');
+                break;
+              case 1:
+                _navigateTo(context, '/search');
+                break;
+              case 2:
+                _navigateTo(context, '/input');
+                break;
+            }
+          },
         ),
-      ),
-    );
-  }
-}
-
-// Halaman Scan Barcode (dummy dulu)
-class ScanBarcodePage extends StatelessWidget {
-  const ScanBarcodePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Halaman Scan Barcode',
-        style: TextStyle(fontSize: 18),
-      ),
-    );
-  }
-}
-
-// Halaman Search (dummy baru)
-class SearchPage extends StatelessWidget {
-  const SearchPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Halaman Pencarian',
-        style: TextStyle(fontSize: 18),
-      ),
-    );
-  }
-}
-
-// Halaman Input Data (dummy dulu)
-class InputDataPage extends StatelessWidget {
-  const InputDataPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Halaman Input Data',
-        style: TextStyle(fontSize: 18),
       ),
     );
   }

@@ -1,22 +1,21 @@
 {
   "project_info": {
-    "project_number": "510618478432",
-    "firebase_url": "https://bpjs-barcodescanner-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "bpjs-barcodescanner",
-    "storage_bucket": "bpjs-barcodescanner.firebasestorage.app"
+    "project_number": "778043477493",
+    "project_id": "bpjsbarcodescanner",
+    "storage_bucket": "bpjsbarcodescanner.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:510618478432:android:7dee6dd344a9dbe49da005",
+        "mobilesdk_app_id": "1:778043477493:android:06e95cf9a85ffb2cad64bc",
         "android_client_info": {
-          "package_name": "com.example.bpjs_barcodescanner"
+          "package_name": "com.example.bpjsbarcodescanner"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDAk7X3Qh2guNb9EvBX5FT8Q9kheRzUunE"
+          "current_key": "AIzaSyDWPUJ24uojQ_37yImUEW1eMJta4b8fEWg"
         }
       ],
       "services": {
