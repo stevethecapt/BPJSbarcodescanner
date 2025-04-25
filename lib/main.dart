@@ -9,7 +9,6 @@ import 'pages/register.dart';
 import 'pages/home.dart';
 import 'pages/input.dart';
 import 'pages/search.dart';
-import 'pages/scan.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +45,6 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const SignUpPage(),
         '/home': (context) => const HomePage(),
-        '/scan': (context) => const ScanBarcodePage(),
         '/search': (context) => const SearchPage(),
         '/input': (context) => const InputDataPage(),
       },

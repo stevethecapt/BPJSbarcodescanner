@@ -19,7 +19,10 @@ class HomePage extends StatelessWidget {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('BPJS Barcode Scanner'),
+          title: const Text(
+            'BPJS Barcode Scanner',
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: Colors.blue,
           centerTitle: true,
           automaticallyImplyLeading: false,
@@ -55,7 +58,7 @@ class HomePage extends StatelessWidget {
           onTap: (index) {
             switch (index) {
               case 0:
-                _navigateTo(context, '/scan');
+                _navigateTo(context, '/home');
                 break;
               case 1:
                 _navigateTo(context, '/search');
