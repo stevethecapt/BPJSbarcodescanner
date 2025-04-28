@@ -19,8 +19,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Otomatis buka kamera setelah login
+    // Reset kamera dan set isScanning ke true saat halaman dibuka
     isScanning = true;
+    scannedCode = null;
+    itemData = null;
   }
 
   // Fungsi logout untuk pengguna
@@ -175,7 +177,10 @@ class _HomePageState extends State<HomePage> {
           onTap: (index) {
             switch (index) {
               case 0:
-                _navigateTo(context, '/home');
+                // Menjaga agar tetap pada halaman Home
+                setState(() {
+                  isScanning = true; // Reset scanning state
+                });
                 break;
               case 1:
                 _navigateTo(context, '/search');
