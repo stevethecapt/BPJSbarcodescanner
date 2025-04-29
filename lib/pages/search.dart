@@ -112,7 +112,8 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async =>
+          false, // Disable physical back button for this page
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -122,7 +123,11 @@ class _SearchPageState extends State<SearchPage> {
           backgroundColor: Colors.blue,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+            onPressed: () {
+              // Pop to home after going through step-by-step
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/home', (route) => false);
+            },
           ),
           actions: [
             IconButton(
@@ -180,14 +185,6 @@ class _SearchPageState extends State<SearchPage> {
                         itemBuilder: (context, index) {
                           final item = searchResults[index];
                           final itemData = item.data() as Map<String, dynamic>;
-
-                          // Menangani null dan memberikan nilai default
-                          final kondisi =
-                              itemData['kondisi'] ?? 'Tidak Tersedia';
-                          final kantor = itemData['kantor'] ?? 'Tidak Tersedia';
-                          final lantai = itemData['lantai'] ?? 'Tidak Tersedia';
-                          final ruangan =
-                              itemData['ruangan'] ?? 'Tidak Tersedia';
 
                           return ListTile(
                             title: Text(itemData['nama_barang'] ??
@@ -257,7 +254,9 @@ class ItemDetailPage extends StatelessWidget {
         backgroundColor: Colors.blue,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context); // This goes back to the search results
+          },
         ),
       ),
       body: Padding(

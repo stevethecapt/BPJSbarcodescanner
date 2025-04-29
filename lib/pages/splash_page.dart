@@ -38,7 +38,6 @@ class _SplashPageState extends State<SplashPage> {
           children: [
             Image.asset('lib/img/bpjs.png', width: 150),
             const SizedBox(height: 8),
-            const CircularProgressIndicator(color: Colors.green),
           ],
         ),
       ),

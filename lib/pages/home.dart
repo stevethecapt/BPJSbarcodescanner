@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mobile_scanner/mobile_scanner.dart'; // Import mobile_scanner untuk scan barcode
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import firestore untuk mengambil data barang
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart'; // Untuk SystemNavigator
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,41 +12,43 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isScanning = true; // Flag untuk mengecek apakah sedang scan
-  String? scannedCode; // Menyimpan hasil barcode yang dipindai
-  Map<String, dynamic>?
-      itemData; // Menyimpan data barang yang diambil dari Firestore
+  bool isScanning = false;
+  bool hasScanned = false; // Menandakan user sudah mencoba scan
+  String? scannedCode;
+  Map<String, dynamic>? itemData;
+
+  final MobileScannerController cameraController = MobileScannerController();
 
   @override
-  void initState() {
-    super.initState();
-    // Reset kamera dan set isScanning ke true saat halaman dibuka
-    isScanning = true;
-    scannedCode = null;
-    itemData = null;
+  void dispose() {
+    cameraController.dispose();
+    super.dispose();
   }
 
-  // Fungsi logout untuk pengguna
+  @override
+  void deactivate() {
+    cameraController.stop();
+    super.deactivate();
+  }
+
   void _logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  // Fungsi untuk navigasi ke halaman lain
   void _navigateTo(BuildContext context, String routeName) {
     Navigator.pushNamed(context, routeName);
   }
 
-  // Fungsi untuk menangani deteksi barcode
   void onBarcodeDetected(BarcodeCapture capture) async {
     final code = capture.barcodes.first.rawValue;
     if (code != null && isScanning) {
       setState(() {
         scannedCode = code;
         isScanning = false;
+        hasScanned = true;
       });
 
-      // Mengambil data barang berdasarkan barcode dari Firestore
       try {
         final firestore = FirebaseFirestore.instance;
         final snapshot = await firestore
@@ -60,11 +63,11 @@ class _HomePageState extends State<HomePage> {
           });
         } else {
           setState(() {
-            itemData = null; // Barang tidak ditemukan
+            itemData = null;
           });
         }
       } catch (e) {
-        print('Terjadi kesalahan: $e');
+        print('Error occurred: $e');
         setState(() {
           itemData = null;
         });
@@ -72,10 +75,15 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // Menambahkan WillPopScope untuk menangani tombol back
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async {
+        // Keluar aplikasi ketika tombol back ditekan
+        SystemNavigator.pop();
+        return false; // Menandakan bahwa kita telah menangani pop
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -98,12 +106,12 @@ class _HomePageState extends State<HomePage> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Memasukkan pemindaian barcode
                     SizedBox(
                       height: 300,
                       width: MediaQuery.of(context).size.width * 0.85,
                       child: MobileScanner(
-                        onDetect: onBarcodeDetected, // Deteksi barcode
+                        controller: cameraController,
+                        onDetect: onBarcodeDetected,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -132,33 +140,80 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Data Barang Ditemukan',
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 16),
-                        Text(
-                            'Barcode: ${itemData?['barcode'] ?? 'Tidak Ditemukan'}'),
-                        Text(
-                            'Nama Barang: ${itemData?['nama_barang'] ?? 'Tidak Ditemukan'}'),
-                        Text(
-                            'Kondisi: ${itemData?['kondisi'] ?? 'Tidak Ditemukan'}'),
-                        Text(
-                            'Kantor: ${itemData?['kantor'] ?? 'Tidak Ditemukan'}'),
-                        Text(
-                            'Lantai: ${itemData?['lantai'] ?? 'Tidak Ditemukan'}'),
-                        Text(
-                            'Ruangan: ${itemData?['ruangan'] ?? 'Tidak Ditemukan'}'),
+                        const SizedBox(height: 16),
+                        Text('Barcode: ${itemData?['barcode'] ?? '-'}'),
+                        Text('Nama Barang: ${itemData?['nama_barang'] ?? '-'}'),
+                        Text('Kondisi: ${itemData?['kondisi'] ?? '-'}'),
+                        Text('Kantor: ${itemData?['kantor'] ?? '-'}'),
+                        Text('Lantai: ${itemData?['lantai'] ?? '-'}'),
+                        Text('Ruangan: ${itemData?['ruangan'] ?? '-'}'),
                       ],
                     ),
                   )
-                : Center(
-                    child: Text(
-                      'Barang Tidak Ditemukan.',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
+                : hasScanned
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Barang Tidak Ditemukan.',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  isScanning = true;
+                                  scannedCode = null;
+                                  itemData = null;
+                                  cameraController.start();
+                                });
+                              },
+                              icon: const Icon(Icons.qr_code_scanner),
+                              label: const Text("Coba Scan Lagi"),
+                            )
+                          ],
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          Expanded(
+                            child: Container(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 60), // Menambahkan jarak
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.qr_code_scanner,
+                                  color: Colors.white),
+                              label: const Text(
+                                'Scan Barcode',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 16),
+                                textStyle: const TextStyle(fontSize: 16),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  isScanning = true;
+                                  scannedCode = null;
+                                  itemData = null;
+                                  hasScanned = false;
+                                  cameraController.start();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
             BottomNavigationBarItem(
@@ -177,15 +232,20 @@ class _HomePageState extends State<HomePage> {
           onTap: (index) {
             switch (index) {
               case 0:
-                // Menjaga agar tetap pada halaman Home
                 setState(() {
-                  isScanning = true; // Reset scanning state
+                  isScanning = true;
+                  scannedCode = null;
+                  itemData = null;
+                  hasScanned = false;
+                  cameraController.start();
                 });
                 break;
               case 1:
+                cameraController.stop();
                 _navigateTo(context, '/search');
                 break;
               case 2:
+                cameraController.stop();
                 _navigateTo(context, '/input');
                 break;
             }
