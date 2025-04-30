@@ -25,7 +25,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> searchData() async {
     setState(() {
       isLoading = true;
-      errorMessage = ''; // Reset error message
+      errorMessage = '';
     });
 
     try {
@@ -33,7 +33,7 @@ class _SearchPageState extends State<SearchPage> {
       if (query.isEmpty) {
         setState(() {
           searchResults.clear();
-          isLoading = false; // Stop loading if query is empty
+          isLoading = false;
         });
         return;
       }
@@ -43,7 +43,7 @@ class _SearchPageState extends State<SearchPage> {
       final result = await firestore
           .collection('barang')
           .where('nama_barang', isGreaterThanOrEqualTo: query)
-          .where('nama_barang', isLessThanOrEqualTo: query + '\uf8ff')
+          .where('nama_barang', isLessThanOrEqualTo: '$query\uf8ff')
           .get();
 
       if (result.docs.isEmpty) {
@@ -53,8 +53,7 @@ class _SearchPageState extends State<SearchPage> {
             .get();
 
         setState(() {
-          searchResults =
-              barcodeResult.docs.isNotEmpty ? barcodeResult.docs : [];
+          searchResults = barcodeResult.docs;
           isLoading = false;
         });
       } else {
@@ -112,19 +111,15 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async =>
-          false, // Disable physical back button for this page
+      onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Pencarian Barang',
-            style: TextStyle(color: Colors.white),
-          ),
+          title: const Text('Pencarian Barang',
+              style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.blue,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              // Pop to home after going through step-by-step
               Navigator.pushNamedAndRemoveUntil(
                   context, '/home', (route) => false);
             },
@@ -159,60 +154,57 @@ class _SearchPageState extends State<SearchPage> {
               ),
               const SizedBox(height: 16),
               if (isLoading) const CircularProgressIndicator(),
+              if (errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(errorMessage,
+                      style: const TextStyle(color: Colors.red)),
+                ),
               Expanded(
-                child: searchController.text.isEmpty
-                    ? ListView.builder(
-                        itemCount:
-                            recentResults.isNotEmpty ? recentResults.length : 0,
-                        itemBuilder: (context, index) {
-                          final item = recentResults[index];
-                          final itemData = item.data() as Map<String, dynamic>;
-                          final barcode =
-                              itemData['barcode'] ?? 'Tidak Tersedia';
-                          final namaBarang = itemData['nama_barang'] ??
-                              'Nama Barang Tidak Ditemukan';
+                child: ListView.builder(
+                  itemCount: searchController.text.isEmpty
+                      ? recentResults.length
+                      : searchResults.length,
+                  itemBuilder: (context, index) {
+                    final item = searchController.text.isEmpty
+                        ? recentResults[index]
+                        : searchResults[index];
+                    final itemData = item.data() as Map<String, dynamic>;
+                    final namaBarang = itemData['nama_barang'] ??
+                        'Nama Barang Tidak Ditemukan';
+                    final barcode = itemData['barcode'] ?? 'Tidak Tersedia';
 
-                          return ListTile(
-                            title: Text(namaBarang),
-                            subtitle: Text('Barcode: $barcode'),
-                            onTap: () => _showItemDetail(item),
-                          );
-                        },
-                      )
-                    : ListView.builder(
-                        itemCount:
-                            searchResults.isNotEmpty ? searchResults.length : 0,
-                        itemBuilder: (context, index) {
-                          final item = searchResults[index];
-                          final itemData = item.data() as Map<String, dynamic>;
-
-                          return ListTile(
-                            title: Text(itemData['nama_barang'] ??
-                                'Nama Barang Tidak Ditemukan'),
-                            subtitle: Text(
-                                'Barcode: ${itemData['barcode'] ?? 'Tidak Tersedia'}'),
-                            onTap: () => _showItemDetail(item),
-                          );
-                        },
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      elevation: 3,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        title: Text(
+                          namaBarang,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        subtitle: Text('Barcode: $barcode'),
+                        trailing: const Icon(Icons.arrow_forward_ios),
+                        onTap: () => _showItemDetail(item),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 1,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.qr_code_scanner),
-              label: 'Scan',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.edit),
-              label: 'Input',
-            ),
+                icon: Icon(Icons.qr_code_scanner), label: 'Scan'),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+            BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Input'),
           ],
           onTap: (index) {
             switch (index) {
@@ -241,12 +233,6 @@ class ItemDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final itemData = item.data() as Map<String, dynamic>;
-    final namaBarang = itemData['nama_barang'] ?? 'Tidak Tersedia';
-    final kondisi = itemData['kondisi'] ?? 'Tidak Tersedia';
-    final kantor = itemData['kantor'] ?? 'Tidak Tersedia';
-    final lantai = itemData['lantai'] ?? 'Tidak Tersedia';
-    final ruangan = itemData['ruangan'] ?? 'Tidak Tersedia';
-    final barcode = itemData['barcode'] ?? 'Tidak Tersedia';
 
     return Scaffold(
       appBar: AppBar(
@@ -254,29 +240,35 @@ class ItemDetailPage extends StatelessWidget {
         backgroundColor: Colors.blue,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // This goes back to the search results
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
-            Text('Nama Barang: $namaBarang',
-                style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            Text('Kondisi: $kondisi', style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            Text('Kantor: $kantor', style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            Text('Lantai: $lantai', style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            Text('Ruangan: $ruangan', style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            Text('Barcode: $barcode', style: const TextStyle(fontSize: 18)),
+            _buildDetailCard('Nama Barang', itemData['nama_barang']),
+            _buildDetailCard('Kondisi', itemData['kondisi']),
+            _buildDetailCard('Kantor', itemData['kantor']),
+            _buildDetailCard('Lantai', itemData['lantai']),
+            _buildDetailCard('Ruangan', itemData['ruangan']),
+            _buildDetailCard('Barcode', itemData['barcode']),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailCard(String label, dynamic value) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 2,
+      child: ListTile(
+        title: Text(label),
+        subtitle: Text(
+          value?.toString() ?? 'Tidak Tersedia',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
     );

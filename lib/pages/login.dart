@@ -81,9 +81,6 @@ class _LoginPageState extends State<LoginPage> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-        ),
         backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -182,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Image.asset(
                   'lib/img/bpjs.png',
                   height: 40,
-                  width: 100,
+                  width: 120,
                 ),
               ),
             ],

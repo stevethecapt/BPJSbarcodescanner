@@ -72,10 +72,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Background kembali seperti semula
-      appBar: AppBar(
-        backgroundColor: Colors.blue, // Navbar biru
-      ),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -154,6 +151,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               style: TextStyle(color: Colors.white),
                             ),
                     ),
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
+                      child: const Text(
+                        'Sudah punya akun? Klik disini untuk Login',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -163,7 +173,7 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Image.asset(
                 'lib/img/bpjs.png',
                 height: 40,
-                width: 100,
+                width: 120,
               ),
             ),
           ],
