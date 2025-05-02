@@ -2,13 +2,13 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services") // ✅ Wajib untuk Firebase
+    id("com.google.gms.google-services") 
 }
 
 android {
     namespace = "com.example.bpjs_barcodescanner"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973" // ✅ Sesuai requirement Firebase SDK
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
