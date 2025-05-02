@@ -31,13 +31,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFC0C0C0),
+      backgroundColor: const Color.fromARGB(255, 219, 219, 219),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('lib/img/bpjs.png', width: 150),
-            const SizedBox(height: 8),
+            Image.asset('lib/img/bpjs.png', width: 180),
+            const SizedBox(height: 16),
           ],
         ),
       ),

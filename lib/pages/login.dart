@@ -16,6 +16,18 @@ class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Atur status bar agar ikon gelap (hitam) di background putih
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
+  }
+
   Future<void> _login() async {
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,6 +94,10 @@ class _LoginPageState extends State<LoginPage> {
       onWillPop: _onWillPop,
       child: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -178,8 +194,8 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Image.asset(
                   'lib/img/bpjs.png',
-                  height: 40,
-                  width: 120,
+                  height: 50,
+                  width: 130,
                 ),
               ),
             ],

@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
-
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -114,16 +113,9 @@ class _SearchPageState extends State<SearchPage> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Pencarian Barang',
-              style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.blue,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/home', (route) => false);
-            },
-          ),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
@@ -131,7 +123,14 @@ class _SearchPageState extends State<SearchPage> {
               tooltip: 'Logout',
             ),
           ],
+          title: Image.asset(
+            'lib/img/bpjs.png',
+            height: 40,
+            width: 100,
+            fit: BoxFit.contain,
+          ),
         ),
+        backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -199,7 +198,9 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
           currentIndex: 1,
+          selectedItemColor: Colors.green,
           items: const [
             BottomNavigationBarItem(
                 icon: Icon(Icons.qr_code_scanner), label: 'Scan'),
@@ -237,7 +238,7 @@ class ItemDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Barang'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),

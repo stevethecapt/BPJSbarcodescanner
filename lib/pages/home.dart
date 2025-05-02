@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
         });
       }
 
-      cameraController.stop(); // stop scanner only after reading is done
+      cameraController.stop();
     }
   }
 
@@ -128,11 +128,7 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'BPJS Barcode Scanner',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.white,
           centerTitle: true,
           automaticallyImplyLeading: false,
           actions: [
@@ -142,7 +138,14 @@ class _HomePageState extends State<HomePage> {
               tooltip: 'Logout',
             ),
           ],
+          title: Image.asset(
+            'lib/img/bpjs.png',
+            height: 40,
+            width: 100,
+            fit: BoxFit.contain,
+          ),
         ),
+        backgroundColor: Colors.white,
         body: isScanning
             ? Center(
                 child: Stack(
@@ -281,6 +284,9 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          currentIndex: 0,
+          selectedItemColor: Colors.green,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.qr_code_scanner),
