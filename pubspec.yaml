@@ -21,6 +21,9 @@ dependencies:
   firebase_storage: ^11.5.3
   http: ^0.13.5
   path_provider: ^2.1.1
+  flutter_dotenv: ^5.0.2
+  msal_flutter: ^3.0.0 # Gunakan versi terbaru yang tersedia
+  flutter_secure_storage: ^9.0.0 # Gunakan versi terbaru yang tersedia
 
 dev_dependencies:
   flutter_test:
